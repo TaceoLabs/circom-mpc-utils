@@ -13,6 +13,13 @@ template CheckRange(MIN, MAX, N) {
     assert(N > 0);
     assert((1 << N) > MAX);
 
+    // Overflow check required due to bug in LessThan and GreaterThan.
+    // See, e.g., https://github.com/BlakeMScurr/comparator-overflow?tab=readme-ov-file
+    //
+    // Thanks to Hideaki Takahashi and Arman Kolozyan for pointing out the issue (on the same day).
+    component inp_in_range = Num2Bits(N);
+    inp_in_range.in <== inp;
+
     component leq = LessEqThan(N);
     leq.in[0] <== inp;
     leq.in[1] <== MAX;
@@ -37,7 +44,11 @@ template Commit2() {
     c <== poseidon.out;
 }
 
-// Swaps if a > b
+// Swaps the inputs if a > b
+//
+// This component does not account for the overflow issue in LessThan and GreaterThan.
+// In the Max Pick Challenge, this is not an issue, since the inputs are range checked in a previous ZK proof correctly and the corresponding commitments are verified in the main circuit.
+// If you want to use this component in a different context, please make sure to fix the overflow issue (see, e.g., https://github.com/BlakeMScurr/comparator-overflow?tab=readme-ov-file)
 template CompareSwapWithId(N) {
     signal input a;
     signal input b;
@@ -70,7 +81,11 @@ template CompareSwapWithId(N) {
     out_b_id <== a_id + b_id - out_a_id;
 }
 
-// Swaps if a > b
+// Swaps the inputs if a > b
+//
+// This component does not account for the overflow issue in LessThan and GreaterThan.
+// In the Max Pick Challenge, this is not an issue, since the inputs are range checked in a previous ZK proof correctly and the corresponding commitments are verified in the main circuit.
+// If you want to use this component in a different context, please make sure to fix the overflow issue (see, e.g., https://github.com/BlakeMScurr/comparator-overflow?tab=readme-ov-file)
 template CompareSwap(N) {
     signal input a;
     signal input b;
@@ -91,6 +106,9 @@ template CompareSwap(N) {
     out_b <== a + b - out_a;
 }
 
+// This component does not account for the overflow issue in LessThan and GreaterThan, which might affect the used CompareSwap component.
+// In the Max Pick Challenge, this is not an issue, since the inputs are range checked in a previous ZK proof correctly and the corresponding commitments are verified in the main circuit.
+// If you want to use this component in a different context, please make sure to fix the overflow issue (see, e.g., https://github.com/BlakeMScurr/comparator-overflow?tab=readme-ov-file)
 template BatcherOddEvenMergeSort(nInputs, N) {
     signal input inputs[nInputs];
     signal output sorted[nInputs];
@@ -136,6 +154,9 @@ template BatcherOddEvenMergeSort(nInputs, N) {
     }
 }
 
+// This component does not account for the overflow issue in LessThan and GreaterThan, which might affect the used CompareSwapWithId component.
+// In the Max Pick Challenge, this is not an issue, since the inputs are range checked in a previous ZK proof correctly and the corresponding commitments are verified in the main circuit.
+// If you want to use this component in a different context, please make sure to fix the overflow issue (see, e.g., https://github.com/BlakeMScurr/comparator-overflow?tab=readme-ov-file)
 template BatcherOddEvenMergeSortWithId(nInputs, N) {
     signal input inputs[nInputs];
     signal input ids[nInputs];
@@ -189,6 +210,9 @@ template BatcherOddEvenMergeSortWithId(nInputs, N) {
     }
 }
 
+// This component does not account for the overflow issue in LessThan and GreaterThan.
+// In the Max Pick Challenge, this is not an issue, since the inputs are range checked in a previous ZK proof correctly and the corresponding commitments are verified in the main circuit.
+// If you want to use this component in a different context, please make sure to fix the overflow issue (see, e.g., https://github.com/BlakeMScurr/comparator-overflow?tab=readme-ov-file)
 template InsertionSort(nInputs, N) {
     signal input inputs[nInputs];
     signal output sorted[nInputs];
@@ -239,6 +263,9 @@ template InsertionSort(nInputs, N) {
     }
 }
 
+// This component does not account for the overflow issue in LessThan and GreaterThan.
+// In the Max Pick Challenge, this is not an issue, since the inputs are range checked in a previous ZK proof correctly and the corresponding commitments are verified in the main circuit.
+// If you want to use this component in a different context, please make sure to fix the overflow issue (see, e.g., https://github.com/BlakeMScurr/comparator-overflow?tab=readme-ov-file)
 template InsertionSortWithID(nInputs, N) {
     signal input inputs[nInputs];
     signal input ids[nInputs];
@@ -311,7 +338,9 @@ template InsertionSortWithID(nInputs, N) {
     }
 }
 
-
+// This component does not account for the overflow issue in LessThan and GreaterThan, which might affect the used BatcherOddEvenMergeSort component.
+// In the Max Pick Challenge, this is not an issue, since the inputs are range checked in a previous ZK proof correctly and the corresponding commitments are verified in the main circuit.
+// If you want to use this component in a different context, please make sure to fix the overflow issue (see, e.g., https://github.com/BlakeMScurr/comparator-overflow?tab=readme-ov-file)
 template UniqueHighestVal(nInputs, N) {
     signal input inputs[nInputs];
     signal output outp;
@@ -372,6 +401,9 @@ template UniqueHighestVal(nInputs, N) {
     outp <== max;
 }
 
+// This component does not account for the overflow issue in LessThan and GreaterThan, which might affect the used BatcherOddEvenMergeSortWithId component.
+// In the Max Pick Challenge, this is not an issue, since the inputs are range checked in a previous ZK proof correctly and the corresponding commitments are verified in the main circuit.
+// If you want to use this component in a different context, please make sure to fix the overflow issue (see, e.g., https://github.com/BlakeMScurr/comparator-overflow?tab=readme-ov-file)
 template UniqueHighestValWithId(nInputs, N) {
     signal input inputs[nInputs];
     signal input ids[nInputs];
